@@ -12,7 +12,8 @@
     <div>
       <g>
         <button type="button" onclick="countClicks('add')">Click Me!</button>
-        <p id="counterDisplay">0</p>
+        <button type="button" onclick="countClicks('reset')">Reset!</button>
+        <p id="counterDisplay"></p>
       </g>
     </div>
     <div id="forCircle">
@@ -20,41 +21,52 @@
   </body>
   <script type="text/javascript">
     var counter = 0;
+    document.getElementById("counterDisplay").innerHTML=counter;
     function countClicks(action){
       if (action == "add"){
         counter++;
 
         document.getElementById("counterDisplay").innerHTML=counter;
       }
+      else if (action=="reset") {
+        counter = 0;
+        document.getElementById("counterDisplay").innerHTML=counter;
+      }
     }
-    margin = {top: 20, bottom: 20, left: 10, right: 10};
+    margin = {top: 60, bottom: 60, left: 40, right: 40};
     var width = 960 - margin.left - margin.right;
     var height = 500 - margin.top - margin.bottom;
+
+    var colorArray = [d3.schemeCategory10,d3.schemeAccent,d3.schemeDark2,d3.schemePaired];
 
     var circleSvg = d3.select("#forCircle").append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .append("g").attr("transform", "translate("+margin.left+ ", "+margin.top+")");
 
-    var color = d3.scaleOrdinal(d3.schemeCategory10);
+    for(a = 0; a < colorArray.length; a++){
+      var color = d3.scaleOrdinal(colorArray[a]);
 
-    var circleArray = [];
+      var circleArray = [];
 
-    for(i = 0; i < d3.schemeCategory10.length; i++){
-      var circleDict ={};
-      circleDict.cx = i * 15;
-      circleDict.cy = 15;
-      circleDict.r = 10;
+      for(i = 0; i < colorArray[a].length; i++){
+        var circleDict ={};
+        circleDict.cx = (i * 15) / 0.2;
+        circleDict.cy = 15;
+        circleDict.r = 10;
+        circleDict.color = color(i);
 
-      circleArray.push(circleDict);
+        circleArray.push(circleDict);
+      }
+
+      var circles = circleSvg.append("g").attr("transform", "translate(0,"+a * 24+")").selectAll("circle").data(circleArray).enter().append("circle");
+
+      circles.attr("cx", function(d){return d.cx;}).attr("cy", function(d){return d.cy;}).attr("r", function(d){return d.r;})
+        .attr("fill", function(d){return d.color;});
     }
 
-    console.log(circleArray);
+    popcornData = d3.csvParse("Team,Arena,Freshness,Saltiness,Crunchiness,Butter,Presentation,Total\nDallas Mavericks,American Airlines Center,5,5,4,5,5,24\nBrooklyn Nets,Barclays Center,4,5,5,4,5,23\nMiami Heat,American Airlines Arena,5,4,4,4,5,22\nPortland Trailblazers,Moda Center,4,4,5,4,3,20")
 
-    //var circleData = [{"cx": 20, "cy": 20, "r": 5}, {"cx": 40, "cy": 40, "r": 5}, {"cx": 60, "cy": 60, "r": 5}];
-
-    var circles = circleSvg.selectAll("circle").data(circleArray).enter().append("circle");
-    circles.attr("cx", function(d){return d.cx;}).attr("cy", function(d){return d.cy;}).attr("r", function(d){return d.r;})
-      .attr("fill", function(d, i){return color(i);});
+    
   </script>
 </html>

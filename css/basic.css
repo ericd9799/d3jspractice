@@ -1,8 +1,8 @@
 body{
-  background-color: powderblue;
+  background-color: white;
 }
 
 #forCircle{
-  border-style: solid;
+  border-style: none;
   border-color: red;
 }
